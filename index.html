@@ -24,17 +24,31 @@
 				if (!mp4Url) return;
 
 				fetch(mp4Url)
-					.then(responseChecker)
-					.then((response) => {
-						console.log('!!!!!reponse!!!!', response);
-						//TODO
+					.then(responseStatusChecker)
+					.then((response) => response.arrayBuffer())
+					.then((responseArr) => {
+						const mp4File = new File([responseArr], 'mp4File');
+						const mp4Reader = new FileReader();
+						mp4Reader.readAsArrayBuffer(mp4File);
+						mp4Reader.onerror = handleReadError;
+						mp4Reader.onload = analyzeMp4File(mp4Reader);
 					})
-					.catch((error) => console.log('Fetch Error:', error));
+					.catch((error) => console.log('Error:', error));
 			};
 
-			const responseChecker = (response) => {
+			const analyzeMp4File = (mp4Reader) => () => {
+				const { result: mp4Buffer } = mp4Reader;
+				console.log('!!!!!!mp4Buffer', mp4Buffer);
+				//TODO!!!
+			};
+
+			const handleReadError = () => {
+				throw new Error('Error reading the file');
+			};
+
+			const responseStatusChecker = (response) => {
 				if (!response.ok) {
-					throw new Error(`Status Code: ${response.status}`);
+					throw new Error(`Response Status Code: ${response.status}`);
 				}
 				return response;
 			};

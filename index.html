@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>CastLabs MP4 Analyzer</title>
+		<style>
+			.input-container {
+				margin-top: 10vh;
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.input-container input {
+				margin: 0 10px;
+				width: 30%;
+			}
+		</style>
+		<script>
+			const startAnalysis = () => {
+				console.log('!!!startAnalysis!!!');
+			};
+		</script>
+	</head>
+	<body>
+		<div class="input-container">
+			<label for="mp4Input">MP4 URL:</label>
+			<input
+				type="text"
+				id="mp4Input"
+				value="https://demo.castlabs.com/tmp/text0.mp4"
+			/>
+			<button type="button" onclick="startAnalysis()">Analyze!</button>
+		</div>
+	</body>
+</html>

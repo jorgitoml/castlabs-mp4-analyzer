@@ -26,24 +26,34 @@
 				fetch(mp4Url)
 					.then(responseStatusChecker)
 					.then((response) => response.arrayBuffer())
-					.then((responseArr) => {
-						const mp4File = new File([responseArr], 'mp4File');
-						const mp4Reader = new FileReader();
-						mp4Reader.readAsArrayBuffer(mp4File);
-						mp4Reader.onerror = handleReadError;
-						mp4Reader.onload = analyzeMp4File(mp4Reader);
-					})
+					.then(analyzeMp4File)
 					.catch((error) => console.log('Error:', error));
 			};
 
-			const analyzeMp4File = (mp4Reader) => () => {
-				const { result: mp4Buffer } = mp4Reader;
-				console.log('!!!!!!mp4Buffer', mp4Buffer);
-				//TODO!!!
+			const analyzeMp4File = (mp4Buffer) => {
+				let index = 0;
+				while (index < mp4Buffer.byteLength) {
+					const boxSize = getBoxSize(mp4Buffer, index);
+					const boxType = getBoxType(mp4Buffer, index);
+
+					console.log('!!!!!!!boxSize', boxSize);
+					console.log('!!!!!!!boxType', boxSize);
+
+					//TODO!!!
+					index = index + boxSize;
+				}
 			};
 
-			const handleReadError = () => {
-				throw new Error('Error reading the file');
+			const getBoxSize = (buffer, index) => {
+				const sizeBytes = buffer.slice(index, index + 4);
+				var sizeView = new DataView(sizeBytes);
+				return sizeView.getUint32();
+			};
+
+			const getBoxType = (buffer, index) => {
+				const typeBytes = buffer.slice(index + 4, index + 8);
+				const typeByteArr = new Uint8Array(typeBytes);
+				return String.fromCharCode(...typeByteArr);
 			};
 
 			const responseStatusChecker = (response) => {

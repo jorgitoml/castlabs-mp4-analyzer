@@ -35,16 +35,29 @@
 				while (index < mp4Buffer.byteLength) {
 					const boxSize = getBoxSize(mp4Buffer, index);
 					const boxType = getBoxType(mp4Buffer, index);
+					const isMdatBox = boxType === 'mdat';
 
 					reportBox(boxType, boxSize);
+					isMdatBox && handleMdatBox(mp4Buffer, index, boxSize);
 
 					//TODO!!!
 					index = getNextIndex(index, boxSize, boxType);
 				}
 			};
 
+			const getFormattedDate = () =>
+				new Date().toISOString().replace('Z', '').replace('T', ' ');
+
+			const handleMdatBox = (buffer, index, size) => {
+				const now = getFormattedDate();
+				var xmlBytes = buffer.slice(index + 8, index + size);
+				const xmlByteArr = new Uint8Array(xmlBytes);
+				const xmlString = String.fromCharCode(...xmlByteArr);
+				console.log(`${now} Content of mdat box is: ${xmlString}`);
+			};
+
 			const reportBox = (type, size) => {
-				const now = new Date().toISOString().replace('Z', '').replace('T', ' ');
+				const now = getFormattedDate();
 				console.log(`${now} Found box of type ${type} and size ${size}`);
 			};
 

@@ -36,13 +36,16 @@
 					const boxSize = getBoxSize(mp4Buffer, index);
 					const boxType = getBoxType(mp4Buffer, index);
 
-					console.log('!!!!!!!boxSize', boxSize);
-					console.log('!!!!!!!boxType', boxType);
-					console.log('----------');
+					reportBox(boxType, boxSize);
 
 					//TODO!!!
 					index = getNextIndex(index, boxSize, boxType);
 				}
+			};
+
+			const reportBox = (type, size) => {
+				const now = new Date().toISOString().replace('Z', '').replace('T', ' ');
+				console.log(`${now} Found box of type ${type} and size ${size}`);
 			};
 
 			const getNextIndex = (index, size, type) => {

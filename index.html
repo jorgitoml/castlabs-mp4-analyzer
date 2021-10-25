@@ -17,6 +17,18 @@
 				margin: 0 10px;
 				width: 30%;
 			}
+			#image-container {
+				margin-top: 10vh;
+				width: 100%;
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-around;
+			}
+			#image-container img {
+				border: 5px solid #1c6ea4;
+				width: 30%;
+				margin-bottom: 5px;
+			}
 		</style>
 		<script>
 			const startAnalysis = () => {
@@ -40,7 +52,6 @@
 					reportBox(boxType, boxSize);
 					isMdatBox && handleMdatBox(mp4Buffer, index, boxSize);
 
-					//TODO!!!
 					index = getNextIndex(index, boxSize, boxType);
 				}
 			};
@@ -54,6 +65,25 @@
 				const xmlByteArr = new Uint8Array(xmlBytes);
 				const xmlString = String.fromCharCode(...xmlByteArr);
 				console.log(`${now} Content of mdat box is: ${xmlString}`);
+
+				const parser = new DOMParser();
+				const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+				const imageTags = xmlDoc.getElementsByTagName('smpte:image');
+
+				const imageContainer = document.getElementById('image-container');
+				for (const imageTag of imageTags) {
+					const imgElement = getImageElement(imageTag);
+					imageContainer.appendChild(imgElement);
+				}
+			};
+
+			const getImageElement = (xmlTag) => {
+				const tagAttributes = xmlTag.attributes;
+				const encoding = tagAttributes.getNamedItem('encoding').nodeValue;
+				const imagetype = tagAttributes.getNamedItem('imagetype').nodeValue;
+				const imgEl = document.createElement('img');
+				imgEl.src = `data:image/${imagetype};${encoding},${xmlTag.textContent}`;
+				return imgEl;
 			};
 
 			const reportBox = (type, size) => {
@@ -101,5 +131,6 @@
 			/>
 			<button type="button" onclick="startAnalysis()">Analyze!</button>
 		</div>
+		<div id="image-container" />
 	</body>
 </html>
